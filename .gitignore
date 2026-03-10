@@ -1,0 +1,11 @@
+node_modules/
+test-results/
+.auth/
+diagnostics/
+.env
+.env.local
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
