@@ -344,13 +344,15 @@ Tests the full lifecycle: **Create -> Run -> Delete**.
         *   If Summary Modal: Verify "Successful Uploads: 0, Failed Uploads: 1" -> Close.
 5.  **Verification:** Return to Dashboard -> **Assert Counter == Initial Count**.
 
-#### **Positive Tests (TC-4, 5, 6)**
+#### **Positive Tests (TC-4, 5, 6, 7, 8)**
 1.  **Setup:** Dashboard -> Capture "Upload GIS Data" counter (Initial Count).
 2.  **Action:** Open Upload Page.
 3.  **Selection:**
     *   TC-4: Valid File (`T2.sid`).
-    *   TC-5: Valid Folder (`T2` folder).
-    *   TC-6: Valid Zip (`T2.zip`).
+    *   TC-5: Valid File (`T3.tif`).
+    *   TC-6: Valid File (`T2.jp2`).
+    *   TC-7: Valid Folder (`T2` folder).
+    *   TC-8: Valid Zip (`T2.zip`).
 4.  **Logic:**
     *   Uploads file/folder.
     *   Enters Dataset Name (`UploadGISData-${timestamp}`).
