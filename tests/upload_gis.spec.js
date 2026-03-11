@@ -102,7 +102,7 @@ test('[P0] TC-3 - invalid ZIP upload does NOT add dataset', async ({ page }) => 
   logInfo(`TEST PASSED: Count remained ${beforeCount}`);
 });
 
-test('[P0] TC-4 - valid GIS file upload', async ({ page }) => {
+test('[P0] TC-4 - valid GIS .sid file upload', async ({ page }) => {
   const dashboard = new DashboardPage(page);
   const uploadPage = new UploadPage(page);
 
@@ -154,7 +154,111 @@ test('[P0] TC-4 - valid GIS file upload', async ({ page }) => {
   logInfo(`TEST PASSED: Count restored to ${beforeCount} after deletion`);
 });
 
-test('[P0] TC-5 - valid GIS folder upload', async ({ page }) => {
+test('[P0] TC-5 - valid GIS .tif file upload', async ({ page }) => {
+  const dashboard = new DashboardPage(page);
+  const uploadPage = new UploadPage(page);
+
+  await dashboard.showStep('Step 1: Starting Test');
+  await dashboard.goto();
+
+  const beforeCount = await dashboard.getAndHighlightUploadCount('Step 2: Capture initial card count');
+
+  await dashboard.showStep('Step 3: Open Upload GIS Data page');
+  await dashboard.robustClick(dashboard.uploadCard);
+  await page.waitForURL('**/#/uploadgisdata');
+
+  await uploadPage.showStep('Step 4: Upload valid GIS file (.sid)');
+  await uploadPage.uploadSingleFile(dataPath('T3.tif'));
+
+  const datasetName = `UploadGISData${Date.now()}`;
+  await uploadPage.showStep('Step 5: Enter unique dataset name');
+  await uploadPage.enterDatasetName(datasetName);
+
+  await uploadPage.showStep('Step 6: Submit upload');
+  await uploadPage.submitUpload();
+
+  await uploadPage.showStep('Step 7: Handle Upload Summary modal');
+  await uploadPage.handleUploadSummaryModal();
+
+  await uploadPage.showStep('Step 8: Verify dataset in table');
+  const firstRow = await uploadPage.verifyDatasetInTable(datasetName);
+
+  await uploadPage.showStep('Step 9: Handle Publish/Viewer, WMS, WCS flow');
+  await uploadPage.handlePublishAndViewerFlow(firstRow);
+
+  await uploadPage.showStep('Step 10: Return to dashboard');
+  await dashboard.goto();
+
+  await uploadPage.showStep('Step 11: Verify count increased');
+  await dashboard.verifyCountIncreased(beforeCount);
+
+  await uploadPage.showStep('Step 12: Navigate back to Upload GIS Data page for deletion');
+  await uploadPage.goto();
+
+  await uploadPage.showStep('Step 13: Delete uploaded dataset');
+  await uploadPage.findAndDeleteDataset(datasetName);
+
+  await uploadPage.showStep('Step 14: Return to dashboard after deletion');
+  await dashboard.goto();
+
+  const finalCount = await dashboard.getAndHighlightUploadCount('Step 15: Capture final card count');
+  expect(finalCount).toBe(beforeCount);
+  logInfo(`TEST PASSED: Count restored to ${beforeCount} after deletion`);
+});
+
+test('[P0] TC-6 - valid GIS .jp2 file upload', async ({ page }) => {
+  const dashboard = new DashboardPage(page);
+  const uploadPage = new UploadPage(page);
+
+  await dashboard.showStep('Step 1: Starting Test');
+  await dashboard.goto();
+
+  const beforeCount = await dashboard.getAndHighlightUploadCount('Step 2: Capture initial card count');
+
+  await dashboard.showStep('Step 3: Open Upload GIS Data page');
+  await dashboard.robustClick(dashboard.uploadCard);
+  await page.waitForURL('**/#/uploadgisdata');
+
+  await uploadPage.showStep('Step 4: Upload valid GIS file (.sid)');
+  await uploadPage.uploadSingleFile(dataPath('T3.jp2'));
+
+  const datasetName = `UploadGISData${Date.now()}`;
+  await uploadPage.showStep('Step 5: Enter unique dataset name');
+  await uploadPage.enterDatasetName(datasetName);
+
+  await uploadPage.showStep('Step 6: Submit upload');
+  await uploadPage.submitUpload();
+
+  await uploadPage.showStep('Step 7: Handle Upload Summary modal');
+  await uploadPage.handleUploadSummaryModal();
+
+  await uploadPage.showStep('Step 8: Verify dataset in table');
+  const firstRow = await uploadPage.verifyDatasetInTable(datasetName);
+
+  await uploadPage.showStep('Step 9: Handle Publish/Viewer, WMS, WCS flow');
+  await uploadPage.handlePublishAndViewerFlow(firstRow);
+
+  await uploadPage.showStep('Step 10: Return to dashboard');
+  await dashboard.goto();
+
+  await uploadPage.showStep('Step 11: Verify count increased');
+  await dashboard.verifyCountIncreased(beforeCount);
+
+  await uploadPage.showStep('Step 12: Navigate back to Upload GIS Data page for deletion');
+  await uploadPage.goto();
+
+  await uploadPage.showStep('Step 13: Delete uploaded dataset');
+  await uploadPage.findAndDeleteDataset(datasetName);
+
+  await uploadPage.showStep('Step 14: Return to dashboard after deletion');
+  await dashboard.goto();
+
+  const finalCount = await dashboard.getAndHighlightUploadCount('Step 15: Capture final card count');
+  expect(finalCount).toBe(beforeCount);
+  logInfo(`TEST PASSED: Count restored to ${beforeCount} after deletion`);
+});
+
+test('[P0] TC-7 - valid GIS folder upload', async ({ page }) => {
   const dashboard = new DashboardPage(page);
   const uploadPage = new UploadPage(page);
 
@@ -206,7 +310,7 @@ test('[P0] TC-5 - valid GIS folder upload', async ({ page }) => {
   logInfo(`TEST PASSED: Count restored to ${beforeCount} after deletion`);
 });
 
-test('[P0] TC-6 - valid GIS ZIP upload', async ({ page }) => {
+test('[P0] TC-8 - valid GIS ZIP upload', async ({ page }) => {
   const dashboard = new DashboardPage(page);
   const uploadPage = new UploadPage(page);
 
