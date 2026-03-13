@@ -4,6 +4,10 @@ const fs = require('fs')
 const path = require('path')
 const nodemailer = require('nodemailer')
 
+// Logo Configuration
+const LOGO_PATH = path.join(__dirname, '..', 'utils', 'testdata', 'GeoWGS84AI_Logo.png');
+const LOGO_CID = 'geowgs84_logo_unique'; // Unique ID for embedding image
+
 function escapeHtml(s = '') { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 
 /**
@@ -148,7 +152,13 @@ class EmailReporter {
       const html = `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
           <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-            <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">GeoWGS84.AI Daily Summary</h2>
+            
+            <!-- Logo Header -->
+            <div style="text-align: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+              <img src="cid:${LOGO_CID}" alt="GeoWGS84.AI Logo" style="width: 180px; height: auto; border: 0;" />
+            </div>
+
+            <h2 style="margin-top: 0; color: #333;">Daily Summary</h2>
             <p>Website testing has completed.</p>
             <table style="width: 100%; text-align: center; margin: 20px 0; border-collapse: collapse;">
               <tr>
@@ -283,7 +293,7 @@ class EmailReporter {
         `;
       }).join('');
 
-      const subject = `📋 GeoWGS84.AI Test Report: ${this.stats.passed} Passed, ${this.stats.failed} Failed`;
+      const subject = `GeoWGS84.AI Test Report: ${this.stats.passed} Passed, ${this.stats.failed} Failed`;
       
       const html = `
         <!DOCTYPE html>
@@ -299,7 +309,11 @@ class EmailReporter {
         </head>
         <body>
             <div class="container">
-                <h2>🧪 GeoWGS84.AI Test Execution Report</h2>
+                <!-- Logo Header -->
+                <div style="text-align: left; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 15px;">
+                    <img src="cid:${LOGO_CID}" alt="GeoWGS84.AI Logo" style="width: 180px; height: auto; border: 0;" />
+                </div>
+
                 <p>Execution completed at: <strong>${new Date().toLocaleString()}</strong></p>
                 <p style="font-size: 11px; color: #666;">Total attachments: ${(totalSize / (1024*1024)).toFixed(2)} MB / 20 MB</p>
                 
@@ -354,13 +368,27 @@ class EmailReporter {
       auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
     })
 
+    // Prepare final attachments list
+    const finalAttachments = [...attachments];
+
+    // Embed Logo if exists
+    if (fs.existsSync(LOGO_PATH)) {
+        finalAttachments.push({
+            filename: 'GeoWGS84AI_Logo.png',
+            path: LOGO_PATH,
+            cid: LOGO_CID // Referenced in the HTML img src
+        });
+    } else {
+        console.warn(`⚠️ Logo file not found at ${LOGO_PATH}. Email will be sent without the logo image.`);
+    }
+
     const mailOptions = {
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to, 
       subject,
       text,
       html,
-      attachments
+      attachments: finalAttachments
     }
     return transporter.sendMail(mailOptions)
   }
